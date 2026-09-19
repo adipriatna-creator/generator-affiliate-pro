@@ -664,11 +664,10 @@
         }
 
         async function callGemini31FlashImage({ promptText, charBase64, prodBase64, targetRatio = "9:16" }) {
-            // Menggunakan API Key yang sudah di-hardcode
-            const apiKey = GEMINI_API_KEY;
+            const apiKey = localStorage.getItem('gemini_api_key');
             
-            if (!apiKey || apiKey === "MASUKKAN_API_KEY_ANDA_DISINI") {
-                throw new Error("API Key belum diisi di dalam kode HTML. Silakan edit file index.html dan masukkan key Anda.");
+            if (!apiKey) {
+                throw new Error("API Key tidak ditemukan. Silakan masukkan API Key Anda saat diminta.");
             }
 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
@@ -992,11 +991,15 @@
         }
 
         async function handleGenerateAll() {
-            // Check API Key existence before running anything
-            if (!localStorage.getItem('gemini_api_key')) {
-                document.getElementById('modal-settings').classList.remove('hidden-item');
-                showToast("Silakan atur API Key Anda terlebih dahulu!", true);
-                return;
+            let apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey) {
+                // Menggunakan prompt default bawaan browser yang sangat aman dan anti error
+                apiKey = window.prompt("🔑 Aplikasi membutuhkan API Key Gemini (Google AI Studio) untuk menghasilkan foto.\n\nSilakan masukkan API Key Anda di bawah ini:");
+                if (!apiKey || apiKey.trim() === "") {
+                    showToast("API Key dibatalkan. Proses dihentikan.", true);
+                    return;
+                }
+                localStorage.setItem('gemini_api_key', apiKey.trim());
             }
 
             if (!charFile.previewUrl) return showToast("Silakan unggah foto karakter terlebih dahulu!", true);
@@ -1056,9 +1059,9 @@
                 }
                 renderResultsGrid(); 
                 
-                // Mencegah Error 402/429 di Vercel: Tunggu 3.5 detik sebelum memanggil API lagi untuk foto berikutnya
+                // Mencegah Error 402/429 di Vercel: Tunggu 4 detik sebelum memanggil API lagi untuk foto berikutnya
                 if (i < generatedResults.length - 1) {
-                    await delay(3500); 
+                    await delay(4000); 
                 }
             }
 
@@ -1242,24 +1245,6 @@
                 } else {
                     document.getElementById('txt-load-sample').textContent = 'Muat Sampel';
                     document.getElementById('btn-generate-text').textContent = 'HASILKAN SEKARANG';
-                }
-            });
-
-            // API Key Settings Modal
-            document.getElementById('btn-open-settings').addEventListener('click', () => {
-                document.getElementById('modal-settings').classList.remove('hidden-item');
-            });
-            document.getElementById('btn-close-settings').addEventListener('click', () => {
-                document.getElementById('modal-settings').classList.add('hidden-item');
-            });
-            document.getElementById('btn-save-settings').addEventListener('click', () => {
-                const keyVal = document.getElementById('input-api-key').value.trim();
-                if(keyVal) {
-                    localStorage.setItem('gemini_api_key', keyVal);
-                    showToast("API Key berhasil disimpan ke Local Storage!");
-                    document.getElementById('modal-settings').classList.add('hidden-item');
-                } else {
-                    showToast("API Key tidak boleh kosong.", true);
                 }
             });
 
