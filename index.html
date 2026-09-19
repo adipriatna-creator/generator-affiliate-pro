@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affilvision Pro - AI Affiliate Studio</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* Custom Scrollbar for better aesthetics in dark mode */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(71, 85, 105, 1);
+        }
+        
+        /* Utility classes for hiding/showing elements easily via JS */
+        .hidden-item { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 transition-all duration-300"></div>
+
+    <header class="h-20 border-b border-slate-800/80 bg-[#0a0f1d]/90 backdrop-blur-md sticky top-0 z-40 px-4 md:px-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 p-[1px] shadow-lg shadow-blue-500/20">
+                <div class="w-full h-full bg-[#0b1120] rounded-xl flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="font-extrabold tracking-wider bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent text-lg">
+                        AFFILVISION PRO
+                    </span>
+                    <span class="bg-blue-500/10 text-blue-400 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-blue-500/30">
+                        Gemini 3.1 Flash Image
+                    </span>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+                    <p class="text-[10px] text-slate-400 tracking-wider uppercase font-medium">
+                        AI CONSISTENT AFFILIATE STUDIO
+                    </p>
+                    <span class="hidden sm:inline text-slate-600 text-[10px]">•</span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10.5px] font-semibold text-slate-300">
+                            Created By: <span class="text-white font-bold">Faisal Adi Priatna</span>
+                        </span>
+                        <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-blue-500 text-white shadow-sm" title="Verified Creator">
+                            <i data-lucide="check" class="w-2.5 h-2.5 stroke-[3.5]"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-1 bg-slate-900/70 p-1 rounded-xl border border-slate-800" id="main-tabs">
+            <button data-tab="generate" class="tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/30">
+                <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
+                Studio Generate
+            </button>
+            <button data-tab="script" class="tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                Script Copy
+            </button>
+        </nav>
+
+        <div class="flex items-center gap-2.5">
+            <button id="btn-load-sample" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-950/70 text-indigo-300 border border-indigo-700/50 hover:bg-indigo-900/60 transition-all shadow-sm">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span class="hidden sm:inline" id="txt-load-sample">Muat Sampel</span>
+            </button>
+
+            <button id="btn-toggle-lang" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-700 transition">
+                <i data-lucide="globe" class="w-3.5 h-3.5 text-blue-400"></i>
+                <span class="uppercase" id="txt-lang">id</span>
+            </button>
+        </div>
+    </header>
+
+    <div id="progress-container" class="hidden-item bg-gradient-to-r from-blue-900/40 via-indigo-900/40 to-slate-900 border-b border-blue-500/30 px-6 py-3 sticky top-20 z-30 flex flex-col gap-1.5 backdrop-blur-md">
+        <div class="flex items-center justify-between text-xs font-medium">
+            <span class="flex items-center gap-2 text-blue-300">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin text-blue-400"></i>
+                <span id="progress-text">Menghasilkan Foto...</span>
+            </span>
+            <span class="text-blue-400 font-bold" id="progress-count">0 / 6 Foto</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div id="progress-bar-fill" class="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        
+        <!-- GENERATE TAB CONTENT -->
+        <div id="view-generate" class="flex flex-1 flex-col lg:flex-row overflow-hidden w-full h-full">
+            
+            <aside class="relative w-full lg:w-[470px] xl:w-[500px] bg-[#090e1a] border-r border-slate-800/80 flex flex-col h-[calc(100vh-5rem)]">
+                <div class="flex-1 overflow-y-auto p-4 md:p-5 pb-8 flex flex-col gap-5 custom-scrollbar">
+
+                    <!-- Upload Masters -->
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                                <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-400"></i>
+                                1. Upload Master Karakter & Produk
+                            </h2>
+                            <span class="text-[10px] text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-800/40 font-semibold">
+                                Konsistensi 100%
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <!-- Character Upload -->
+                            <div class="relative bg-[#0c1322] border border-slate-800 rounded-xl p-3 flex flex-col gap-2 hover:border-slate-700 transition">
+                                <div class="flex items-center justify-between text-xs font-bold text-slate-200">
+                                    <span class="flex items-center gap-1.5">
+                                        <i data-lucide="camera" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                        Foto Karakter
+                                    </span>
+                                    <span id="char-status-badge" class="hidden-item text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/50">Siap</span>
+                                </div>
+                                
+                                <label id="char-upload-empty" class="border-2 border-dashed border-slate-700/80 hover:border-blue-500/60 rounded-lg aspect-[3/4] flex flex-col items-center justify-center p-3 text-center cursor-pointer bg-slate-900/30 hover:bg-slate-900/60 transition group">
+                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 transition text-blue-400 mb-2">
+                                        <i data-lucide="upload" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-xs font-semibold text-slate-300">Upload Karakter</span>
+                                    <span class="text-[10px] text-slate-500 mt-1">Wajah & rambut dipertahankan</span>
+                                    <input type="file" accept="image/*" class="hidden" id="char-file-input">
+                                </label>
+
+                                <div id="char-upload-filled" class="hidden-item relative rounded-lg overflow-hidden border border-slate-700/60 bg-black/40 group aspect-[3/4] flex items-center justify-center">
+                                    <img id="char-preview-img" src="" alt="Character" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 p-2">
+                                        <label class="cursor-pointer p-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-xs font-medium flex items-center gap-1">
+                                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                            <span>Ganti</span>
+                                            <input type="file" accept="image/*" class="hidden" id="char-file-input-replace">
+                                        </label>
+                                        <button id="btn-remove-char" class="p-2 bg-red-600/80 hover:bg-red-500 rounded-lg text-white">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span id="char-file-name" class="text-[10px] text-slate-400 truncate">Belum ada foto karakter</span>
+                            </div>
+
+                            <!-- Product Upload -->
+                            <div class="relative bg-[#0c1322] border border-slate-800 rounded-xl p-3 flex flex-col gap-2 hover:border-slate-700 transition">
+                                <div class="flex items-center justify-between text-xs font-bold text-slate-200">
+                                    <span class="flex items-center gap-1.5">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-400"></i>
+                                        Foto Produk
+                                    </span>
+                                    <span id="prod-status-badge" class="hidden-item text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/50">Siap</span>
+                                </div>
+
+                                <label id="prod-upload-empty" class="border-2 border-dashed border-slate-700/80 hover:border-blue-500/60 rounded-lg aspect-[3/4] flex flex-col items-center justify-center p-3 text-center cursor-pointer bg-slate-900/30 hover:bg-slate-900/60 transition group">
+                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 transition text-blue-400 mb-2">
+                                        <i data-lucide="upload" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-xs font-semibold text-slate-300">Upload Produk</span>
+                                    <span class="text-[10px] text-slate-500 mt-1">Bentuk, logo & teks dijaga 100%</span>
+                                    <input type="file" accept="image/*" class="hidden" id="prod-file-input">
+                                </label>
+
+                                <div id="prod-upload-filled" class="hidden-item relative rounded-lg overflow-hidden border border-slate-700/60 bg-black/40 group aspect-[3/4] flex items-center justify-center">
+                                    <img id="prod-preview-img" src="" alt="Product" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 p-2">
+                                        <label class="cursor-pointer p-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-xs font-medium flex items-center gap-1">
+                                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                            <span>Ganti</span>
+                                            <input type="file" accept="image/*" class="hidden" id="prod-file-input-replace">
+                                        </label>
+                                        <button id="btn-remove-prod" class="p-2 bg-red-600/80 hover:bg-red-500 rounded-lg text-white">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span id="prod-file-name" class="text-[10px] text-slate-400 truncate">Belum ada foto produk</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                Kategori Produk <span class="text-rose-400">*</span>
+                            </label>
+                            <span id="cat-indicator" class="text-[10px] text-slate-500 italic">Belum dipilih</span>
+                        </div>
+                        <select id="select-category" class="w-full bg-[#0c1322] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-medium">
+                            <option value="">-- Pilih Kategori Produk Manual --</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold uppercase tracking-wider text-slate-400">
+                                Gaya Presentasi Produk <span class="text-rose-400">*</span>
+                            </span>
+                            <span id="styles-count" class="text-[10px] font-semibold text-slate-500">0 Dipilih</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Klik untuk memilih (bisa lebih dari satu):</p>
+                        <div id="styles-container" class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto custom-scrollbar p-1.5 bg-[#080d18] rounded-xl border border-slate-800/80">
+                            <!-- Buttons injected via JS -->
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">
+                                Background / Lokasi <span class="text-rose-400">*</span>
+                            </label>
+                            <span id="bg-indicator" class="hidden-item text-[10px] text-emerald-400 font-semibold">✓ Terpilih</span>
+                        </div>
+                        <select id="select-background" class="w-full bg-[#0c1322] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-medium">
+                            <option value="">-- Pilih Background / Lokasi Mewah --</option>
+                        </select>
+                        <div id="custom-bg-input-wrapper" class="hidden-item mt-1">
+                            <input type="text" id="input-custom-bg" placeholder="Ketik deskripsi background impian Anda..." class="w-full bg-[#0c1322] border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 pt-2 border-t border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-400"></i>
+                                Pencahayaan <span class="text-rose-400">*</span>
+                            </label>
+                            <span id="light-indicator" class="hidden-item text-[10px] text-amber-400 font-semibold">✓ Terpilih</span>
+                        </div>
+                        <select id="select-lighting" class="w-full bg-[#0c1322] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-medium">
+                            <option value="">-- Pilih Pencahayaan (Lighting) --</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Style Foto <span class="text-rose-400">*</span></label>
+                            <select id="select-photostyle" class="w-full bg-[#0c1322] border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-medium">
+                                <option value="">-- Pilih Style Foto --</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Rasio Foto</label>
+                            <select id="select-ratio" class="w-full bg-[#0c1322] border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 font-medium font-mono">
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0c1322] border border-blue-900/40 rounded-xl p-3 flex flex-col gap-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-blue-300 flex items-center gap-1.5">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-blue-400"></i>
+                                Kunci Konsistensi
+                            </span>
+                            <span class="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40 font-semibold">Aktif 100%</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 pt-1 text-[11px] text-slate-300">
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" checked id="check-face" class="rounded text-blue-600 bg-slate-800">
+                                <span>Wajah & Kulit</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" checked id="check-outfit" class="rounded text-blue-600 bg-slate-800">
+                                <span>Outfit</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" checked id="check-logo" class="rounded text-blue-600 bg-slate-800">
+                                <span>Logo Produk</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 pt-1">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Catatan Tambahan (Opsional)</label>
+                        <textarea id="input-custom-prompt" rows="2" placeholder="Contoh: buat ekspresi tersenyum natural..." class="w-full bg-[#0c1322] border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button id="btn-generate" type="button" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs tracking-wide flex items-center justify-center gap-2 shadow-lg transition-all bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:via-indigo-500 hover:to-purple-500 text-white shadow-blue-600/25 hover:scale-[1.01] active:scale-[0.99]">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-300 animate-pulse shrink-0 btn-icon-normal"></i>
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 animate-spin hidden-item btn-icon-loading"></i>
+                            <span id="btn-generate-text">HASILKAN SEKARANG</span>
+                        </button>
+                    </div>
+
+                </div>
+            </aside>
+
+            <section class="flex-1 bg-[#070b14] overflow-y-auto h-[calc(100vh-5rem)] p-4 md:p-6 flex flex-col gap-6 custom-scrollbar relative">
+                
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-[#0a0f1d] border border-slate-800/90 rounded-2xl p-4">
+                    <div>
+                        <h1 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Studio Hasil 6 Foto AI Fotorealistis</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            Background: <strong id="header-bg" class="text-blue-300">(Belum dipilih)</strong> • Gaya: <strong id="header-styles" class="text-indigo-300">(Belum dipilih)</strong> • Kategori: <strong id="header-cat" class="text-amber-300">(Belum dipilih)</strong>
+                        </p>
+                    </div>
+                    <button id="btn-download-all" class="hidden-item px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition flex items-center gap-1.5 shadow-lg shadow-blue-600/30">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>DOWNLOAD SEMUA FOTO SIAP</span>
+                    </button>
+                </div>
+
+                <div id="view-empty" class="flex-1 min-h-[420px] rounded-2xl border-2 border-dashed border-slate-800/80 flex flex-col items-center justify-center p-8 text-center bg-slate-900/10">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-blue-600/20 to-purple-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-4 shadow-xl">
+                        <i data-lucide="sparkles" class="w-10 h-10 animate-pulse"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-200 mb-1" id="empty-title">6 Foto AI Belum Dihasilkan</h3>
+                    <p class="text-xs text-slate-400 max-w-md leading-relaxed mb-6" id="empty-desc">
+                        Pilih Kategori, Gaya Presentasi, Background Mewah, Pencahayaan, dan Style Foto secara manual di sebelah kiri, lalu klik tombol di bawah sidebar. Pastikan API Key diatur di ikon Settings (kiri tombol id/en).
+                    </p>
+                    <button id="btn-empty-sample" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-blue-300"></i>
+                        <span id="txt-empty-sample">Muat Sampel Siap Pakai & Coba Cepat</span>
+                    </button>
+                </div>
+
+                <div id="results-grid" class="hidden-item grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                    <!-- Cards injected via JS -->
+                </div>
+
+                <div id="script-preview-box" class="hidden-item bg-[#0a0f1d] border border-slate-800 rounded-2xl p-5 flex flex-col gap-4 mt-4">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                            <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i data-lucide="file-text" class="w-4 h-4 text-blue-400"></i>
+                                Naskah Video & Copywriting Affiliate TikTok
+                            </h2>
+                            <p class="text-xs text-slate-400" id="script-preview-desc">
+                                Naskah berkonversi tinggi.
+                            </p>
+                        </div>
+                        <button id="btn-copy-preview-script" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition flex items-center gap-1.5 shadow-md">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            Copy Naskah
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="bg-[#0c1322] border border-slate-800/80 p-3.5 rounded-xl flex flex-col gap-1.5">
+                            <span class="text-xs font-bold text-blue-400">🔥 3-SECOND HOOK</span>
+                            <p id="script-hook" class="text-xs text-slate-300 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-[#0c1322] border border-slate-800/80 p-3.5 rounded-xl flex flex-col gap-1.5">
+                            <span class="text-xs font-bold text-indigo-400">💎 BENEFIT PRODUK</span>
+                            <p id="script-benefits" class="text-xs text-slate-300 leading-relaxed"></p>
+                        </div>
+                        <div class="bg-[#0c1322] border border-slate-800/80 p-3.5 rounded-xl flex flex-col gap-1.5">
+                            <span class="text-xs font-bold text-emerald-400">🛒 CALL TO ACTION</span>
+                            <p id="script-cta" class="text-xs text-slate-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <div id="view-script" class="hidden-item flex-1 p-6 overflow-y-auto h-[calc(100vh-5rem)] custom-scrollbar">
+            <div class="max-w-4xl mx-auto flex flex-col gap-4">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-5 h-5 text-blue-400"></i>
+                    Affiliate Script Studio
+                </h2>
+                
+                <div id="script-full-container" class="hidden-item bg-[#0c1322] border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-blue-400">Full Recording Script</span>
+                        <button id="btn-copy-full-script" class="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy
+                        </button>
+                    </div>
+                    <div id="script-full-content" class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono whitespace-pre-line text-slate-200">
+                    </div>
+                </div>
+
+                <div id="script-empty-container" class="p-12 text-center text-slate-500 bg-[#0c1322] rounded-2xl border border-slate-800">
+                    <p id="txt-script-empty">Pilih fitur dan hasilkan foto di tab 'Studio Generate' untuk memicu naskah otomatis.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Detail Foto -->
+    <div id="modal-detail" class="hidden-item fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-[#0c1322] border border-slate-800 rounded-2xl max-w-3xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                <span id="modal-detail-title" class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i>
+                    Detail Foto
+                </span>
+                <button id="btn-close-detail" class="p-1 rounded-lg text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto flex flex-col md:flex-row gap-5 items-center">
+                <div class="max-w-[320px] w-full aspect-[9/16] rounded-xl overflow-hidden border border-slate-800 bg-black flex items-center justify-center">
+                    <img id="modal-detail-img" src="" alt="Preview" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1 flex flex-col gap-4 text-xs">
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex flex-col gap-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-blue-400">Prompt Image Gemini AI</span>
+                            <button id="btn-copy-detail-prompt" class="text-[10px] text-slate-400 hover:text-white"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                        </div>
+                        <p id="modal-detail-prompt" class="text-slate-300 font-mono text-[11px] leading-relaxed max-h-32 overflow-y-auto custom-scrollbar"></p>
+                    </div>
+                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex flex-col gap-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-purple-400">Prompt Image-to-Video</span>
+                            <button id="btn-copy-detail-video" class="text-[10px] text-slate-400 hover:text-white"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                        </div>
+                        <p id="modal-detail-video" class="text-slate-300 font-mono text-[11px] leading-relaxed max-h-32 overflow-y-auto custom-scrollbar"></p>
+                    </div>
+                    <button id="btn-download-detail" class="py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center justify-center gap-1.5">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        Unduh Gambar HD
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Prompt Modal -->
+    <div id="modal-edit" class="hidden-item fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-[#0c1322] border border-slate-800 rounded-2xl max-w-xl w-full p-5 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+                <h3 id="modal-edit-title" class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="edit-3" class="w-4 h-4 text-blue-400"></i>
+                    Edit Prompt
+                </h3>
+                <button id="btn-close-edit" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <textarea id="modal-edit-textarea" rows="6" class="w-full bg-[#090e1a] border border-slate-800 rounded-xl p-3 text-xs text-slate-200 font-mono focus:outline-none focus:border-blue-500"></textarea>
+            <div class="flex justify-end gap-2">
+                <button id="btn-cancel-edit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700">Batal</button>
+                <button id="btn-save-edit" class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    Simpan & Render Ulang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PENTING: Masukkan API Key Anda di sini. 
+        // Pastikan Repository GitHub disetting PRIVATE agar API key tidak diblokir Google.
+        const GEMINI_API_KEY = "MASUKKAN_API_KEY_ANDA_DISINI"; 
+
+        // Fungsi Delay untuk mencegah Error 402/429 (Rate Limit / Quota Exceeded)
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // Constants Data
+        const PRODUCT_CATEGORIES = [
+            "Skincare & Beauty", "Fashion & Outfit", "Makeup & Cosmetics", "Sepatu & Sneakers",
+            "Tas & Dompet Mewah", "Jam Tangan & Jewelry", "Elektronik & Gadget", "Smartphone & Aksesoris",
+            "Home & Living", "Perlengkapan Dapur Mewah", "Makanan & Minuman Viral", "Kesehatan, Vitamin & Fitness",
+            "Parfum & Luxury Fragrance", "Otomotif & Aksesoris Mobil", "Lainnya"
+        ];
+
+        const PRESENTATION_STYLES = [
+            "Sedang Dipegang di Tangan", "Sedang Dipakai / Dikenakan", "Sedang Diperagakan / Dicoba",
+            "Diletakkan di Atas Meja Marmer", "Close-up Detail Tekstur Produk", "Unboxing Style Mewah",
+            "Review Jujur Creator Terpercaya", "Casual Aesthetic Lifestyle", "Luxury High-End Editorial",
+            "UGC TikTok Viral Konversi Tinggi", "Sedang Disemprotkan / Diaplikasikan", "Flat Lay Minimalis Komersial"
+        ];
+
+        const ASPECT_RATIOS = [
+            { label: "9:16 Vertical (TikTok / Reels / Shorts)", value: "9:16", geminiRatio: "9:16" },
+            { label: "1:1 Square (Feed Instagram / Katalog)", value: "1:1", geminiRatio: "1:1" },
+            { label: "4:5 Portrait (Optimized IG Feed)", value: "4:5", geminiRatio: "3:4" },
+            { label: "16:9 Landscape (YouTube / Web Banner)", value: "16:9", geminiRatio: "16:9" },
+            { label: "3:4 Portrait (Standard E-Commerce)", value: "3:4", geminiRatio: "3:4" }
+        ];
+
+        const BACKGROUND_OPTIONS = [
+            "Bedroom (Ruangan Kamar Tidur Estetik Minimalis)", "Luxury Penthouse Master Bedroom with City Skyline",
+            "Aesthetic French Nordic Bedroom with Linen Bedding", "Modern Minimalist Walk-in Dressing Room & Wardrobe",
+            "Luxury Golden Vanity Dressing Table with Illuminated Mirror", "Luxury Penthouse Living Room with Floor-to-Ceiling Windows",
+            "Modern Scandinavian Sunlit Apartment with Warm Oak Floor", "Opulent Parisian Haussmann Salon with Fireplace & Mouldings",
+            "Beverly Hills Modern Villa with Sunlit Terrace", "Minimalist Japandi Stone & Warm Teak Wood Lounge",
+            "Luxury Italian White Carrara Marble Bathroom with Gold Taps", "Spa Wellness Bathroom with Soft Candlelight & Slate Stone",
+            "Modern Glass Walk-in Bathroom with Tropical Sunlight", "Private Luxury Yacht Deck Overlooking Turquoise Ocean",
+            "Monaco Marina Harbor Balcony with Luxury Yachts", "Private Jet Luxury Leather Cabin Interior",
+            "Dubai Luxury Rooftop Sky Lounge with Burj Khalifa View", "Santorini Greece White Stone Terrace with Deep Blue Aegean Sea",
+            "Swiss Alps Luxury Wooden Chalet with Snowy Mountain Vista", "Tropical Bali Private Villa with Plunge Pool & Palm Fronds",
+            "5-Star Hotel Presidential Suite Lobby & Lounge", "Luxury Champagne & Cocktail Bar with Ambient Mood Lighting",
+            "Cozy Artisanal Specialty Coffee Shop with Warm Bokeh", "Aesthetic Outdoor Parisian Sidewalk Cafe at Golden Hour",
+            "Rooftop Glass Infinity Pool with Sunset Glow", "High-Fashion Designer Boutique Showroom with Soft Spotlights",
+            "Modern Cyclorama Photography Studio with Soft Diffusers", "Luxury Editorial Dark Velvet Studio with Brushed Brass Accents",
+            "Contemporary Glass Art Gallery with Natural Ambient Sunlight", "High-End Modern Kitchen Island with Calacatta Gold Marble",
+            "Futuristic Cyber-Luxury Neon Lounge with Soft Cyan/Violet Hue", "Outdoor Sunlit Urban Street with Clean Architectural Lines",
+            "Custom Background"
+        ];
+
+        const LIGHTING_OPTIONS = [
+            "Natural Window Morning Light (Lembut & Hangat)", "Soft Beauty Ring Light (Wajah Bersih Glowing)",
+            "Professional Commercial Softbox Studio Lighting", "Golden Hour Warm Sunset Glow (Mewah & Estetik)",
+            "Cinematic Moody Ambient Studio Lighting", "Bright Clean E-Commerce Daylight (Tajam & Jelas)",
+            "Luxury Soft Diffused Editorial Glow", "Dramatic Rim Light with Subtle Silhouette"
+        ];
+
+        const PHOTO_STYLES = [
+            "Photorealistic Commercial Photography (Ultra HD 8K)", "UGC Authentic TikTok Creator Style (Natural & Viral)",
+            "Ultra Realistic 8K Magazine Quality Cover", "High-Fashion Luxury Editorial Shot",
+            "Clean Minimalist E-Commerce Product Showcase", "Cinematic Film Tone with Rich Color Depth"
+        ];
+
+        const SAMPLE_MODEL_IMG = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=80";
+        const SAMPLE_PRODUCT_IMG = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=700&q=80";
+
+        let currentLang = 'id';
+        let activeTab = 'generate';
+        let isBatchGenerating = false;
+        
+        let charFile = { previewUrl: null, name: "Belum ada foto karakter", size: "0 KB" };
+        let prodFile = { previewUrl: null, name: "Belum ada foto produk", size: "0 KB" };
+        
+        let selectedStyles = [];
+        let generatedResults = [];
+        let generatedScripts = null;
+        let editPromptCardId = null;
+
+        // DOM Elements
+        const elCategory = document.getElementById('select-category');
+        const elBackground = document.getElementById('select-background');
+        const elLighting = document.getElementById('select-lighting');
+        const elPhotoStyle = document.getElementById('select-photostyle');
+        const elRatio = document.getElementById('select-ratio');
+        const customBgWrapper = document.getElementById('custom-bg-input-wrapper');
+        const customBgInput = document.getElementById('input-custom-bg');
+
+        function showToast(msg, isError = false) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            if(isError) {
+                toast.className = 'bg-rose-950 border border-rose-500/50 text-white px-5 py-3 rounded-xl shadow-2xl shadow-rose-500/20 flex items-center gap-3 backdrop-blur-md animate-fade-in';
+                toast.innerHTML = `<i data-lucide="alert-triangle" class="w-5 h-5 text-rose-400 shrink-0"></i><span class="text-sm font-medium">${msg}</span>`;
+            } else {
+                toast.className = 'bg-slate-900/95 border border-blue-500/50 text-white px-5 py-3 rounded-xl shadow-2xl shadow-blue-500/20 flex items-center gap-3 backdrop-blur-md animate-fade-in';
+                toast.innerHTML = `<i data-lucide="zap" class="w-5 h-5 text-blue-400 animate-pulse shrink-0"></i><span class="text-sm font-medium">${msg}</span>`;
+            }
+            
+            container.appendChild(toast);
+            lucide.createIcons({root: toast});
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
+        }
+
+        function copyTextToClipboard(text, label) {
+            try {
+                const el = document.createElement('textarea');
+                el.value = text;
+                el.setAttribute('readonly', '');
+                el.style.position = 'absolute';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                showToast(`${label || 'Teks'} berhasil disalin ke clipboard!`);
+            } catch (err) {
+                showToast("Gagal menyalin teks.", true);
+            }
+        }
+
+        function handleDownloadImage(dataUrl, filename) {
+            if (!dataUrl) return;
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename || `AFFILVISION_${Date.now()}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast(currentLang === 'id' ? "Mengunduh gambar..." : "Downloading image...");
+        }
+
+        async function toCleanBase64Jpeg(source) {
+            if (!source) return null;
+            if (source.startsWith('data:image/jpeg;base64,') || source.startsWith('data:image/png;base64,')) {
+                return source;
+            }
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous'; // Sangat penting agar image Unsplash tidak kena taint canvas policy
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || 600;
+                    canvas.height = img.naturalHeight || 800;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    try {
+                        resolve(canvas.toDataURL('image/jpeg', 0.92));
+                    } catch (err) {
+                        resolve(source); // Fallback jika gagal (biasanya karena cors error)
+                    }
+                };
+                img.onerror = () => resolve(source);
+                img.src = source;
+            });
+        }
+
+        async function callGemini31FlashImage({ promptText, charBase64, prodBase64, targetRatio = "9:16" }) {
+            // Menggunakan API Key yang sudah di-hardcode
+            const apiKey = GEMINI_API_KEY;
+            
+            if (!apiKey || apiKey === "MASUKKAN_API_KEY_ANDA_DISINI") {
+                throw new Error("API Key belum diisi di dalam kode HTML. Silakan edit file index.html dan masukkan key Anda.");
+            }
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+
+            const parts = [{ text: promptText }];
+
+            if (charBase64 && charBase64.includes(',')) {
+                const mime = charBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
+                const dataOnly = charBase64.split(',')[1];
+                parts.push({ inlineData: { mimeType: mime.includes('png') ? 'image/png' : 'image/jpeg', data: dataOnly } });
+            }
+
+            if (prodBase64 && prodBase64.includes(',')) {
+                const mime = prodBase64.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
+                const dataOnly = prodBase64.split(',')[1];
+                parts.push({ inlineData: { mimeType: mime.includes('png') ? 'image/png' : 'image/jpeg', data: dataOnly } });
+            }
+
+            let apiRatio = "9:16";
+            if (targetRatio === "1:1") apiRatio = "1:1";
+            else if (targetRatio === "16:9") apiRatio = "16:9";
+            else if (targetRatio === "3:4" || targetRatio === "4:5") apiRatio = "3:4";
+
+            const payload = {
+                contents: [{ role: "user", parts }],
+                generationConfig: {
+                    responseModalities: ["IMAGE"],
+                    imageConfig: { aspectRatio: apiRatio }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    // Custom user-friendly error
+                    if (response.status === 402 || response.status === 429) {
+                        throw new Error(`Error ${response.status}: Kuota API Habis atau terlalu cepat (Rate Limit). Coba gunakan API Key akun Google lain.`);
+                    }
+                    if (response.status === 400 && errorText.includes('API key not valid')) {
+                        throw new Error("API Key tidak valid atau telah dicabut oleh Google.");
+                    }
+                    throw new Error(`Error API (${response.status}): ${errorText.slice(0, 150)}`);
+                }
+
+                const result = await response.json();
+                const inlinePart = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+                if (inlinePart?.inlineData?.data) {
+                    const mime = inlinePart.inlineData.mimeType || 'image/jpeg';
+                    return `data:${mime};base64,${inlinePart.inlineData.data}`;
+                }
+                
+                throw new Error("API Gemini tidak mengembalikan data gambar yang valid.");
+            } catch (err) {
+                // Tangkap error fetch network (seperti CORS atau internet putus)
+                if(err.message === "Failed to fetch") {
+                    throw new Error("Gagal menghubungi server Google. Periksa koneksi atau API Key Anda.");
+                }
+                throw err;
+            }
+        }
+
+        function initSelects() {
+            PRODUCT_CATEGORIES.forEach(c => elCategory.add(new Option(c, c)));
+            BACKGROUND_OPTIONS.forEach(b => elBackground.add(new Option(b, b)));
+            LIGHTING_OPTIONS.forEach(l => elLighting.add(new Option(l, l)));
+            PHOTO_STYLES.forEach(p => elPhotoStyle.add(new Option(p, p)));
+            ASPECT_RATIOS.forEach(r => elRatio.add(new Option(r.label, r.value)));
+            renderStylesMultiSelect();
+        }
+
+        function renderStylesMultiSelect() {
+            const container = document.getElementById('styles-container');
+            container.innerHTML = '';
+            PRESENTATION_STYLES.forEach(style => {
+                const isSelected = selectedStyles.includes(style);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `text-[11px] px-2.5 py-1.5 rounded-lg font-medium transition-all text-left flex items-center gap-1.5 ${
+                    isSelected ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/30 border border-blue-400/40' : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-slate-200 hover:border-slate-700'
+                }`;
+                btn.innerHTML = `
+                    <span class="w-3 h-3 rounded-sm flex items-center justify-center border text-[9px] ${isSelected ? 'border-white bg-blue-700 text-white' : 'border-slate-700 bg-slate-800'}">
+                        ${isSelected ? '<i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>' : ''}
+                    </span>
+                    <span>${style}</span>
+                `;
+                btn.onclick = () => {
+                    if (isSelected) selectedStyles = selectedStyles.filter(s => s !== style);
+                    else selectedStyles.push(style);
+                    
+                    document.getElementById('styles-count').textContent = `${selectedStyles.length} Dipilih`;
+                    document.getElementById('styles-count').className = `text-[10px] font-semibold ${selectedStyles.length > 0 ? 'text-blue-400' : 'text-slate-500'}`;
+                    renderStylesMultiSelect();
+                };
+                container.appendChild(btn);
+            });
+            lucide.createIcons({root: container});
+        }
+
+        function updateUploadUI(type) {
+            const fileData = type === 'character' ? charFile : prodFile;
+            const prefix = type === 'character' ? 'char' : 'prod';
+            
+            const emptyState = document.getElementById(`${prefix}-upload-empty`);
+            const filledState = document.getElementById(`${prefix}-upload-filled`);
+            const badge = document.getElementById(`${prefix}-status-badge`);
+            const nameEl = document.getElementById(`${prefix}-file-name`);
+            const imgEl = document.getElementById(`${prefix}-preview-img`);
+
+            if (fileData.previewUrl) {
+                emptyState.classList.add('hidden-item');
+                filledState.classList.remove('hidden-item');
+                badge.classList.remove('hidden-item');
+                imgEl.src = fileData.previewUrl;
+                nameEl.textContent = `${fileData.name} (${fileData.size})`;
+            } else {
+                emptyState.classList.remove('hidden-item');
+                filledState.classList.add('hidden-item');
+                badge.classList.add('hidden-item');
+                imgEl.src = '';
+                nameEl.textContent = `Belum ada foto ${type}`;
+            }
+        }
+
+        function buildBlueprints() {
+            const isHolding = selectedStyles.includes("Sedang Dipegang di Tangan");
+            const isWearing = selectedStyles.includes("Sedang Dipakai / Dikenakan");
+            const isOnTable = selectedStyles.includes("Diletakkan di Atas Meja Marmer");
+            
+            const activeCat = elCategory.value || "Produk";
+            const activeBg = elBackground.value || "Modern Luxury";
+            const customBg = customBgInput.value || 'ultra high luxury interior, clean architectural aesthetic';
+            const activeLight = elLighting.value || "Professional Commercial Softbox Studio Lighting";
+
+            const envDetail = `inside the setting: "${activeBg}" (${customBg})`;
+
+            return [
+                {
+                    id: 1, title: "FOTO 01: Hero Center Pose", concept: isHolding ? "Memegang Produk di Depan Dada" : "Pose Utama Produk",
+                    scenePose: isHolding ? `The character is seated comfortably ${envDetail}. Both hands are naturally holding the ${activeCat} product centered at upper chest level.` : `The character is positioned gracefully next to the ${activeCat} merchandise ${envDetail}.`,
+                    handAction: isHolding ? "holding product with both natural hands" : "open elegant presentation gesture",
+                    cameraShot: "Medium Close-up Shot, 50mm f/1.8 lens",
+                    i2vAction: `Character gently presents the ${activeCat} product toward camera while blinking softly with an authentic warm smile ${envDetail}.`
+                },
+                {
+                    id: 2, title: "FOTO 02: Casual In-Use Lifestyle", concept: "Momen Santai Lifestyle",
+                    scenePose: `The character is captured in a relaxed candid lifestyle moment ${envDetail}, interacting with the ${activeCat} product casually.`,
+                    handAction: "natural interaction with product",
+                    cameraShot: "Medium 3/4 Shot, portrait orientation",
+                    i2vAction: `Character turns slightly towards camera ${envDetail}, lifting the ${activeCat} product.`
+                },
+                {
+                    id: 3, title: "FOTO 03: Feature & Showcase", concept: "Fokus Menunjukkan Detail",
+                    scenePose: `The character gestures specifically towards the label and brand markings of the ${activeCat} item ${envDetail}.`,
+                    handAction: "pointing or presenting product label clearly",
+                    cameraShot: "Front 3/4 Angle, shallow depth-of-field",
+                    i2vAction: `Character rotates the ${activeCat} product by 15 degrees to catch the ${activeLight}.`
+                },
+                {
+                    id: 4, title: "FOTO 04: Macro Close-up", concept: "Close-up Tangan & Tekstur",
+                    scenePose: `Extreme close-up macro shot focusing on the character's hands holding the ${activeCat} merchandise ${envDetail}. Natural skin texture.`,
+                    handAction: "realistic grip on product",
+                    cameraShot: "Macro Detail Shot, 85mm lens, creamy bokeh",
+                    i2vAction: `Smooth slow push-in zoom on hands holding the ${activeCat} merchandise under ${activeLight}.`
+                },
+                {
+                    id: 5, title: "FOTO 05: Dynamic Creator UGC", concept: "Pose Review Creator",
+                    scenePose: `The character is enthusiastically demonstrating the ${activeCat} product ${envDetail} like a viral creator giving a review.`,
+                    handAction: "one hand holding product, other hand gesturing with enthusiasm",
+                    cameraShot: "Slight Low Angle, dynamic creator framing",
+                    i2vAction: `Character enthusiastically talks to camera while holding the ${activeCat} item.`
+                },
+                {
+                    id: 6, title: "FOTO 06: Premium Editorial Ad", concept: "Iklan Editorial Mewah",
+                    scenePose: `An elegant symmetrical luxury editorial advertisement shot ${envDetail} showcasing the ${activeCat} item with poise.`,
+                    handAction: "poised editorial grip",
+                    cameraShot: "Straight Eye Level, symmetrical luxury composition",
+                    i2vAction: `Slow cinematic camera orbit around character holding the ${activeCat} product ${envDetail}.`
+                }
+            ];
+        }
+
+        function renderResultsGrid() {
+            const grid = document.getElementById('results-grid');
+            const emptyView = document.getElementById('view-empty');
+            const scriptBox = document.getElementById('script-preview-box');
+            const btnDownloadAll = document.getElementById('btn-download-all');
+
+            if (generatedResults.length === 0) {
+                grid.classList.add('hidden-item');
+                emptyView.classList.remove('hidden-item');
+                scriptBox.classList.add('hidden-item');
+                btnDownloadAll.classList.add('hidden-item');
+                return;
+            }
+
+            emptyView.classList.add('hidden-item');
+            grid.classList.remove('hidden-item');
+            grid.innerHTML = '';
+
+            let allReady = generatedResults.some(c => c.status === 'ready');
+            if (allReady) btnDownloadAll.classList.remove('hidden-item');
+            else btnDownloadAll.classList.add('hidden-item');
+
+            const category = elCategory.value;
+            const bgVal = elBackground.value;
+
+            generatedResults.forEach((card, idx) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'bg-[#0c1322] border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 flex flex-col gap-3.5 transition-all shadow-lg hover:shadow-xl group';
+                
+                let imageContent = '';
+                if (card.status === 'generating') {
+                    imageContent = `
+                        <div class="flex flex-col items-center justify-center gap-3 p-6 text-center">
+                            <div class="w-12 h-12 rounded-full border-2 border-blue-500/30 border-t-blue-500 animate-spin flex items-center justify-center">
+                                <i data-lucide="sparkles" class="w-5 h-5 text-blue-400"></i>
+                            </div>
+                            <span class="text-xs font-bold text-blue-300">Rendering dengan Gemini...</span>
+                        </div>
+                    `;
+                } else if (card.status === 'error') {
+                    imageContent = `
+                        <div class="flex flex-col items-center justify-center gap-2.5 p-6 text-center">
+                            <i data-lucide="alert-circle" class="w-10 h-10 text-rose-500"></i>
+                            <span class="text-xs font-bold text-rose-300">Gagal Memproses Foto</span>
+                            <p class="text-[10px] text-slate-400 line-clamp-2">${card.errorMsg}</p>
+                            <button onclick="handleRegenerate('${card.id}')" class="mt-2 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Coba Lagi
+                            </button>
+                        </div>
+                    `;
+                } else if (card.status === 'ready') {
+                    const shortBg = bgVal ? bgVal.split('(')[0] : 'Luxury';
+                    const firstStyle = selectedStyles.length > 0 ? selectedStyles[0] : '';
+                    imageContent = `
+                        <img src="${card.imageUrl}" alt="${card.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]">
+                        <div class="absolute top-2.5 left-2.5 flex flex-col gap-1 max-w-[85%]">
+                            <span class="bg-black/75 backdrop-blur-md text-[9px] font-semibold text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30 truncate">📍 ${shortBg}</span>
+                            ${firstStyle ? `<span class="bg-black/75 backdrop-blur-md text-[9px] font-semibold text-blue-300 px-2 py-0.5 rounded border border-blue-500/30 truncate">✋ ${firstStyle}</span>` : ''}
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30 opacity-0 group-hover:opacity-100 transition-all flex flex-col justify-between p-3.5">
+                            <div class="flex justify-end gap-1.5">
+                                <button onclick="openDetailModal('${card.id}')" class="p-2 rounded-lg bg-black/60 hover:bg-blue-600 text-white backdrop-blur-md transition" title="Perbesar">
+                                    <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="handleDownloadImage('${card.imageUrl}', 'AFFILVISION_${category}_0${idx+1}.jpg')" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1 shadow-lg">
+                                    <i data-lucide="download" class="w-3.5 h-3.5"></i> Download
+                                </button>
+                                <button onclick="handleRegenerate('${card.id}')" class="px-3 py-1.5 rounded-lg bg-slate-900/90 hover:bg-indigo-600 text-white text-xs font-semibold flex items-center gap-1 border border-slate-700">
+                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Re-Render
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const escapedPrompt = card.prompt.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const escapedVideoPrompt = card.videoPrompt.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+                cardEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-full bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center text-[10px]">0${idx + 1}</span>
+                            ${card.concept}
+                        </span>
+                        <span class="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">${card.aspect}</span>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden bg-black/70 border border-slate-800/80 aspect-[9/16] max-h-[420px] flex items-center justify-center">
+                        ${imageContent}
+                    </div>
+                    
+                    <div class="flex flex-col gap-1.5 bg-[#090e1a] p-2.5 rounded-xl border border-slate-800/90">
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-bold text-slate-300 flex items-center gap-1">
+                                <i data-lucide="image" class="w-3 h-3 text-blue-400"></i> IMAGE PROMPT
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="openEditModal('${card.id}')" class="text-[10px] text-slate-400 hover:text-white flex items-center gap-0.5"><i data-lucide="edit-3" class="w-3 h-3"></i> Edit</button>
+                                <button onclick="copyTextToClipboard('${escapedPrompt}', 'Prompt Foto')" class="text-[10px] text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 line-clamp-2 font-mono leading-relaxed">${card.prompt}</p>
+                    </div>
+
+                    <div class="flex flex-col gap-1.5 bg-gradient-to-br from-[#0e1629] to-[#120f26] p-2.5 rounded-xl border border-indigo-900/40">
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-bold text-indigo-300 flex items-center gap-1">
+                                <i data-lucide="video" class="w-3 h-3 text-purple-400"></i> VIDEO PROMPT
+                            </span>
+                            <button onclick="copyTextToClipboard('${escapedVideoPrompt}', 'Prompt Video')" class="text-[10px] text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                        </div>
+                        <p class="text-[10px] text-slate-300 line-clamp-2 font-mono leading-relaxed">${card.videoPrompt}</p>
+                    </div>
+                `;
+                grid.appendChild(cardEl);
+            });
+            lucide.createIcons({root: grid});
+
+            if (generatedScripts && !isBatchGenerating) {
+                scriptBox.classList.remove('hidden-item');
+                document.getElementById('script-hook').textContent = `"${generatedScripts.hook}"`;
+                document.getElementById('script-benefits').textContent = `"${generatedScripts.benefits}"`;
+                document.getElementById('script-cta').textContent = `"${generatedScripts.cta}"`;
+                
+                document.getElementById('script-empty-container').classList.add('hidden-item');
+                document.getElementById('script-full-container').classList.remove('hidden-item');
+                document.getElementById('script-full-content').textContent = generatedScripts.fullScript;
+            } else {
+                scriptBox.classList.add('hidden-item');
+            }
+        }
+
+        async function handleGenerateAll() {
+            // Check API Key existence before running anything
+            if (!localStorage.getItem('gemini_api_key')) {
+                document.getElementById('modal-settings').classList.remove('hidden-item');
+                showToast("Silakan atur API Key Anda terlebih dahulu!", true);
+                return;
+            }
+
+            if (!charFile.previewUrl) return showToast("Silakan unggah foto karakter terlebih dahulu!", true);
+            if (!prodFile.previewUrl) return showToast("Silakan unggah foto produk terlebih dahulu!", true);
+            if (!elCategory.value) return showToast("Silakan pilih Kategori Produk!", true);
+            if (selectedStyles.length === 0) return showToast("Silakan pilih minimal 1 Gaya Presentasi!", true);
+            if (!elBackground.value) return showToast("Silakan pilih Background / Lokasi!", true);
+            if (!elLighting.value) return showToast("Silakan pilih Pencahayaan!", true);
+            if (!elPhotoStyle.value) return showToast("Silakan pilih Style Foto!", true);
+
+            isBatchGenerating = true;
+            updateGenButtonState();
+            
+            const blueprints = buildBlueprints();
+            const category = elCategory.value;
+            const bg = elBackground.value;
+            const lighting = elLighting.value;
+            const style = elPhotoStyle.value;
+            const custom = document.getElementById('input-custom-prompt').value;
+            const aspect = elRatio.value;
+
+            generatedResults = blueprints.map((bp, idx) => ({
+                id: `photo-${Date.now()}-${idx}`,
+                index: idx + 1,
+                title: bp.title,
+                concept: bp.concept,
+                status: 'generating',
+                errorMsg: null,
+                imageUrl: null,
+                aspect: aspect,
+                prompt: `${style} for ${category}. Maintain exact facial geometry, hairstyle, skin tone from Character ref. Maintain exact product shape, branding from Product ref. ENVIRONMENT: ${bg}. Light: ${lighting}. ACTION: ${bp.scenePose}. Hands: ${bp.handAction}. CAMERA: ${bp.cameraShot}. Selected styles: ${selectedStyles.join(', ')}. ${custom ? 'Extra: ' + custom : ''} --quality: 8k.`,
+                videoPrompt: `High-fidelity commercial video clip. 8s duration. Keep identical character identity and intact ${category} branding. ACTION: ${bp.i2vAction} Background: ${bg}, Light: ${lighting}. 60fps.`
+            }));
+
+            renderResultsGrid();
+            
+            document.getElementById('progress-container').classList.remove('hidden-item');
+
+            for (let i = 0; i < generatedResults.length; i++) {
+                document.getElementById('progress-text').textContent = `Menghasilkan Foto 0${i + 1}/6: ${generatedResults[i].concept}...`;
+                document.getElementById('progress-count').textContent = `${i + 1} / 6 Foto`;
+                document.getElementById('progress-bar-fill').style.width = `${((i + 1) / 6) * 100}%`;
+
+                try {
+                    const imgData = await callGemini31FlashImage({
+                        promptText: generatedResults[i].prompt,
+                        charBase64: charFile.previewUrl,
+                        prodBase64: prodFile.previewUrl,
+                        targetRatio: aspect
+                    });
+                    generatedResults[i].status = 'ready';
+                    generatedResults[i].imageUrl = imgData;
+                } catch (err) {
+                    console.error(err);
+                    generatedResults[i].status = 'error';
+                    generatedResults[i].errorMsg = err.message || "Gagal menghasilkan gambar.";
+                }
+                renderResultsGrid(); 
+                
+                // Mencegah Error 402/429 di Vercel: Tunggu 3.5 detik sebelum memanggil API lagi untuk foto berikutnya
+                if (i < generatedResults.length - 1) {
+                    await delay(3500); 
+                }
+            }
+
+            // Script Gen
+            generatedScripts = {
+                hook: `Sering bingung cari ${category} yang beneran ampuh, mewah, dan estetik? Stop scrolling, ini yang lagi viral!`,
+                benefits: `Kualitas premium dengan hasil instan. Packaging mewah dan praktis!`,
+                cta: `Buruan klik keranjang kuning di kiri bawah sekarang sebelum promo habis!`,
+                fullScript: `[3-SECOND HOOK]\n"Kalau kamu masih bingung cari ${category} yang beneran worth it dan mewah, tonton video ini sampai habis!"\n\n[BENEFITS IN ACTION]\n"Dulu aku skeptis, tapi setelah nyoba sendiri ${category} ini di ${bg.split('(')[0]}, beneran bikin takjub sama hasilnya. Desainnya elegan!"\n\n[CALL TO ACTION]\n"Mumpung lagi ada diskon eksklusif hari ini, langsung amankan di keranjang kuning sekarang!"`
+            };
+            
+            isBatchGenerating = false;
+            updateGenButtonState();
+            document.getElementById('progress-container').classList.add('hidden-item');
+            renderResultsGrid();
+            if(generatedResults.some(r => r.status === 'error')){
+                showToast("Proses selesai, namun beberapa gambar gagal di-generate.", true);
+            } else {
+                showToast("Selesai memproses 6 foto AI!");
+            }
+        }
+
+        async function handleRegenerate(cardId, customPrompt = null) {
+            const idx = generatedResults.findIndex(c => c.id === cardId);
+            if (idx === -1) return;
+
+            generatedResults[idx].status = 'generating';
+            generatedResults[idx].errorMsg = null;
+            if (customPrompt) generatedResults[idx].prompt = customPrompt;
+            renderResultsGrid();
+
+            try {
+                const imgData = await callGemini31FlashImage({
+                    promptText: generatedResults[idx].prompt,
+                    charBase64: charFile.previewUrl,
+                    prodBase64: prodFile.previewUrl,
+                    targetRatio: generatedResults[idx].aspect
+                });
+                generatedResults[idx].status = 'ready';
+                generatedResults[idx].imageUrl = imgData;
+                showToast(`Foto 0${idx + 1} berhasil diperbarui!`);
+            } catch (err) {
+                generatedResults[idx].status = 'error';
+                generatedResults[idx].errorMsg = err.message || "Gagal menghasilkan gambar.";
+                showToast(`Gagal merender ulang foto 0${idx + 1}.`, true);
+            }
+            renderResultsGrid();
+        }
+
+        function updateGenButtonState() {
+            const btn = document.getElementById('btn-generate');
+            const txt = document.getElementById('btn-generate-text');
+            const iconsNormal = btn.querySelectorAll('.btn-icon-normal');
+            const iconsLoading = btn.querySelectorAll('.btn-icon-loading');
+
+            if (isBatchGenerating) {
+                btn.classList.replace('bg-gradient-to-r', 'bg-slate-800');
+                btn.classList.add('text-slate-500', 'cursor-not-allowed');
+                txt.textContent = 'MEMPROSES...';
+                iconsNormal.forEach(i => i.classList.add('hidden-item'));
+                iconsLoading.forEach(i => i.classList.remove('hidden-item'));
+                btn.disabled = true;
+            } else {
+                btn.classList.replace('bg-slate-800', 'bg-gradient-to-r');
+                btn.classList.remove('text-slate-500', 'cursor-not-allowed');
+                txt.textContent = 'HASILKAN SEKARANG';
+                iconsNormal.forEach(i => i.classList.remove('hidden-item'));
+                iconsLoading.forEach(i => i.classList.add('hidden-item'));
+                btn.disabled = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSelects();
+            lucide.createIcons();
+
+            const handleFile = (e, type) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (file.size > 15 * 1024 * 1024) return showToast("Ukuran maksimal 15MB", true);
+
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    const cleanBase64 = await toCleanBase64Jpeg(ev.target.result);
+                    const sizeFormatted = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+                    if (type === 'character') charFile = { previewUrl: cleanBase64, name: file.name, size: sizeFormatted };
+                    else prodFile = { previewUrl: cleanBase64, name: file.name, size: sizeFormatted };
+                    
+                    updateUploadUI(type);
+                    showToast(`Foto ${type === 'character' ? 'Karakter' : 'Produk'} diunggah!`);
+                };
+                reader.readAsDataURL(file);
+            };
+
+            document.getElementById('char-file-input').addEventListener('change', e => handleFile(e, 'character'));
+            document.getElementById('char-file-input-replace').addEventListener('change', e => handleFile(e, 'character'));
+            document.getElementById('prod-file-input').addEventListener('change', e => handleFile(e, 'product'));
+            document.getElementById('prod-file-input-replace').addEventListener('change', e => handleFile(e, 'product'));
+
+            document.getElementById('btn-remove-char').addEventListener('click', () => {
+                charFile = { previewUrl: null, name: "Belum ada foto karakter", size: "0 KB" };
+                updateUploadUI('character');
+            });
+            document.getElementById('btn-remove-prod').addEventListener('click', () => {
+                prodFile = { previewUrl: null, name: "Belum ada foto produk", size: "0 KB" };
+                updateUploadUI('product');
+            });
+
+            // Indicators
+            elCategory.addEventListener('change', e => {
+                const ind = document.getElementById('cat-indicator');
+                if (e.target.value) {
+                    ind.textContent = e.target.value;
+                    ind.className = 'text-[10px] text-blue-400 font-semibold';
+                    document.getElementById('header-cat').textContent = e.target.value;
+                } else {
+                    ind.textContent = 'Belum dipilih';
+                    ind.className = 'text-[10px] text-slate-500 italic';
+                    document.getElementById('header-cat').textContent = '(Belum dipilih)';
+                }
+            });
+
+            elBackground.addEventListener('change', e => {
+                document.getElementById('bg-indicator').classList.toggle('hidden-item', !e.target.value);
+                customBgWrapper.classList.toggle('hidden-item', e.target.value !== 'Custom Background');
+                document.getElementById('header-bg').textContent = e.target.value ? e.target.value.split('(')[0] : '(Belum dipilih)';
+            });
+
+            elLighting.addEventListener('change', e => {
+                document.getElementById('light-indicator').classList.toggle('hidden-item', !e.target.value);
+            });
+
+            // Load Sample
+            document.getElementById('btn-load-sample').addEventListener('click', async () => {
+                showToast(currentLang === 'id' ? "Memuat foto sampel..." : "Loading samples...");
+                charFile = { previewUrl: await toCleanBase64Jpeg(SAMPLE_MODEL_IMG), name: "model_sarah.jpg", size: "1.2 MB" };
+                prodFile = { previewUrl: await toCleanBase64Jpeg(SAMPLE_PRODUCT_IMG), name: "glow_serum.jpg", size: "1.8 MB" };
+                updateUploadUI('character');
+                updateUploadUI('product');
+                
+                elCategory.value = PRODUCT_CATEGORIES[0];
+                elCategory.dispatchEvent(new Event('change'));
+                selectedStyles = [PRESENTATION_STYLES[0]];
+                renderStylesMultiSelect();
+                elBackground.value = BACKGROUND_OPTIONS[0];
+                elBackground.dispatchEvent(new Event('change'));
+                elLighting.value = LIGHTING_OPTIONS[0];
+                elLighting.dispatchEvent(new Event('change'));
+                elPhotoStyle.value = PHOTO_STYLES[0];
+                
+                showToast("Sampel siap dicoba!");
+            });
+            document.getElementById('btn-empty-sample').addEventListener('click', () => document.getElementById('btn-load-sample').click());
+
+            // Generate
+            document.getElementById('btn-generate').addEventListener('click', handleGenerateAll);
+
+            // Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tabId = e.currentTarget.dataset.tab;
+                    activeTab = tabId;
+                    
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.className = 'tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60';
+                    });
+                    e.currentTarget.className = 'tab-btn flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/30';
+                    
+                    document.getElementById('view-generate').classList.toggle('hidden-item', tabId !== 'generate');
+                    document.getElementById('view-script').classList.toggle('hidden-item', tabId !== 'script');
+                });
+            });
+
+            // Lang toggle
+            document.getElementById('btn-toggle-lang').addEventListener('click', () => {
+                currentLang = currentLang === 'id' ? 'en' : 'id';
+                document.getElementById('txt-lang').textContent = currentLang;
+                if(currentLang === 'en') {
+                    document.getElementById('txt-load-sample').textContent = 'Load Sample';
+                    document.getElementById('btn-generate-text').textContent = 'GENERATE NOW';
+                } else {
+                    document.getElementById('txt-load-sample').textContent = 'Muat Sampel';
+                    document.getElementById('btn-generate-text').textContent = 'HASILKAN SEKARANG';
+                }
+            });
+
+            // API Key Settings Modal
+            document.getElementById('btn-open-settings').addEventListener('click', () => {
+                document.getElementById('modal-settings').classList.remove('hidden-item');
+            });
+            document.getElementById('btn-close-settings').addEventListener('click', () => {
+                document.getElementById('modal-settings').classList.add('hidden-item');
+            });
+            document.getElementById('btn-save-settings').addEventListener('click', () => {
+                const keyVal = document.getElementById('input-api-key').value.trim();
+                if(keyVal) {
+                    localStorage.setItem('gemini_api_key', keyVal);
+                    showToast("API Key berhasil disimpan ke Local Storage!");
+                    document.getElementById('modal-settings').classList.add('hidden-item');
+                } else {
+                    showToast("API Key tidak boleh kosong.", true);
+                }
+            });
+
+            // Modals Logic Detail & Edit
+            document.getElementById('btn-close-detail').addEventListener('click', () => document.getElementById('modal-detail').classList.add('hidden-item'));
+            document.getElementById('btn-close-edit').addEventListener('click', () => document.getElementById('modal-edit').classList.add('hidden-item'));
+            document.getElementById('btn-cancel-edit').addEventListener('click', () => document.getElementById('modal-edit').classList.add('hidden-item'));
+            
+            document.getElementById('btn-save-edit').addEventListener('click', () => {
+                const newVal = document.getElementById('modal-edit-textarea').value;
+                document.getElementById('modal-edit').classList.add('hidden-item');
+                handleRegenerate(editPromptCardId, newVal);
+            });
+
+            document.getElementById('btn-download-all').addEventListener('click', () => {
+                const ready = generatedResults.filter(c => c.status === 'ready' && c.imageUrl);
+                if (ready.length === 0) return showToast("Belum ada foto yang siap diunduh.", true);
+                ready.forEach((c, i) => setTimeout(() => handleDownloadImage(c.imageUrl, `AFFILVISION_Batch_0${i+1}.jpg`), i * 300));
+            });
+
+            // Script Buttons
+            document.getElementById('btn-copy-preview-script').addEventListener('click', () => copyTextToClipboard(generatedScripts?.fullScript, 'Script Affiliate'));
+            document.getElementById('btn-copy-full-script').addEventListener('click', () => copyTextToClipboard(generatedScripts?.fullScript, 'Script Affiliate'));
+        });
+
+        // Global exposing for inline onclick handlers in renderResultsGrid
+        window.openDetailModal = (id) => {
+            const card = generatedResults.find(c => c.id === id);
+            if (!card) return;
+            document.getElementById('modal-detail-title').innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i> ${card.title}`;
+            document.getElementById('modal-detail-img').src = card.imageUrl;
+            document.getElementById('modal-detail-prompt').textContent = card.prompt;
+            document.getElementById('modal-detail-video').textContent = card.videoPrompt;
+            document.getElementById('btn-download-detail').onclick = () => handleDownloadImage(card.imageUrl, `AFFIL_${card.concept}.jpg`);
+            document.getElementById('btn-copy-detail-prompt').onclick = () => copyTextToClipboard(card.prompt, 'Prompt Image');
+            document.getElementById('btn-copy-detail-video').onclick = () => copyTextToClipboard(card.videoPrompt, 'Prompt Video');
+            document.getElementById('modal-detail').classList.remove('hidden-item');
+            lucide.createIcons({root: document.getElementById('modal-detail')});
+        };
+
+        window.openEditModal = (id) => {
+            const card = generatedResults.find(c => c.id === id);
+            if (!card) return;
+            editPromptCardId = id;
+            document.getElementById('modal-edit-title').innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-blue-400"></i> Edit Prompt: ${card.title}`;
+            document.getElementById('modal-edit-textarea').value = card.prompt;
+            document.getElementById('modal-edit').classList.remove('hidden-item');
+            lucide.createIcons({root: document.getElementById('modal-edit')});
+        };
+
+        window.handleRegenerate = handleRegenerate;
+        window.handleDownloadImage = handleDownloadImage;
+        window.copyTextToClipboard = copyTextToClipboard;
+    </script>
+</body>
+</html>
